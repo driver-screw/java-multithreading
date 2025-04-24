@@ -1,5 +1,6 @@
 package locks.reenterantlock;
 
+import javafx.animation.AnimationTimer;
 import javafx.animation.FillTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -47,6 +48,37 @@ public class Main extends Application {
         root.getChildren().add(grid);
 
         primaryStage.setScene(new Scene(root, width, height));
+
+        PricesContainer pricesContainer = new PricesContainer();
+        PriceUpdater priceUpdater = new PriceUpdater(pricesContainer);
+        AnimationTimer animationTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (pricesContainer.getLockObject().tryLock()) {
+                    try {
+                        Label bitcoinPriceLabel = cryptoLabels.get("BTC");
+                        bitcoinPriceLabel.setText(String.valueOf(pricesContainer.getBitcoinPrice()));
+
+                        Label etherPriceLabel = cryptoLabels.get("ETH");
+                        etherPriceLabel.setText(String.valueOf(pricesContainer.getEtherPrice()));
+
+                        Label liteCoinPriceLabel = cryptoLabels.get("LTC");
+                        liteCoinPriceLabel.setText(String.valueOf(pricesContainer.getLitecoinPrice()));
+
+                        Label bitcoinCashPriceLabel = cryptoLabels.get("BCH");
+                        bitcoinCashPriceLabel.setText(String.valueOf(pricesContainer.getBitcoinCashPrice()));
+
+                        Label ripplePriceLabel = cryptoLabels.get("XRP");
+                        ripplePriceLabel.setText(String.valueOf(pricesContainer.getRipplePrice()));
+                    } finally {
+                        pricesContainer.getLockObject().unlock();
+                    }
+                }
+            }
+        };
+
+        animationTimer.start();
+        priceUpdater.start();
         primaryStage.show();
 
     }
