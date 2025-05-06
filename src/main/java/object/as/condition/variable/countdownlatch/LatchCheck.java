@@ -3,7 +3,7 @@ package object.as.condition.variable.countdownlatch;
 public class LatchCheck {
 
     public static void main(String[] args) throws InterruptedException {
-        Latch latch = new SimpleCountDownLatchObjectCondition(2);
+        Latch latch = new SimpleCountDownLatchLockCondition(2);
         CheckThread t1 = new CheckThread(latch);
         CheckThread t2 = new CheckThread(latch);
 
